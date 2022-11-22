@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">My Wellness</string>
+    <string name="splash_subtitle">Digital Healthcare System</string>
 </resources>
