@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -85,7 +86,17 @@ public class Login extends AppCompatActivity {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://healthify-backend.onrender.com/api/patient/signin", jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                    customProgressDialog.dismissCustomProgressDialog();
+                customProgressDialog.dismissCustomProgressDialog();
+
+                SharedPreferences sharedPreferences  = getSharedPreferences("authStorage", MODE_PRIVATE);
+                SharedPreferences.Editor myEdit = sharedPreferences.edit();
+                myEdit.putBoolean("isAuthenticated",true);
+                try {
+                    myEdit.putString("token",response.getString("token"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                myEdit.apply();
 
                 Toast.makeText(Login.this, "Success", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(Login.this,Home.class);
