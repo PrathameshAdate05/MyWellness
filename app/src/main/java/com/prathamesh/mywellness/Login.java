@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -21,6 +22,8 @@ import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 public class Login extends AppCompatActivity {
 
@@ -74,6 +77,7 @@ public class Login extends AppCompatActivity {
         try {
             jsonObject.put("userId",id);
             jsonObject.put("password",pass);
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -83,18 +87,35 @@ public class Login extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                     customProgressDialog.dismissCustomProgressDialog();
 
-
-
-
-                Toast.makeText(Login.this, "Success!!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Login.this, "Success", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Login.this,Home.class);
+                startActivity(intent);
+                finish();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                     customProgressDialog.dismissCustomProgressDialog();
 
+                String s = null;
+                JSONObject errorResponse = null;
+                try {
+                    s = new String(error.networkResponse.data,"UTF-8");
 
-                    TV_Warning.setText("Invalid Username or Password");
+                    errorResponse  = new JSONObject(s);
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    TV_Warning.setVisibility(View.VISIBLE);
+                    TV_Warning.setText(errorResponse.getString("message").toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
